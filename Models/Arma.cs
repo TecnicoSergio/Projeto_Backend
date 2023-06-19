@@ -12,7 +12,9 @@ namespace RpgApi.Models
         public string Nome { get; set;} = "Pistola 365";
         public int Dano { get; set; }
         public  string Personagem { get; set; } = "Animado";
-        public ClasseEnum Classe{ get; set; } = ClasseEnum.Cavaleiro;
+        public ClasseEnum Classe { get; set; } = ClasseEnum.Cavaleiro;
+
+        public int PersonagemId { get; set; }
         
     }
 }

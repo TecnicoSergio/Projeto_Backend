@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RpgApi.Data;
 using RpgApi.Models;
 using RpgApi.Models.Enuns;
 
@@ -24,6 +26,14 @@ namespace RpgApi.Controllers
             new Arma { Id = 5, Nome = " Calibri 38"}
         };
 
+          private readonly DataContext _context;
+
+        public ArmasController(DataContext context)
+        {
+            _context = context;
+        }
+
+
         [HttpGet("GetAll")]
         public IActionResult Get()
         {
@@ -36,10 +46,30 @@ namespace RpgApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddArma(Arma novaArma)
+        public async Task<IActionResult> Add(Arma novaArma)
         {
-            armas.Add(novaArma);
-            return Ok(armas);
+            try
+            {
+                if (novaArma.Dano == 0)
+                    throw new System.Exception("O dano da armwa não pode ser 0");
+
+                Personagem p = await _context.Personagens
+                .FirstOrDefaultAsync(p => p.Id == novaArma.PersonagemId);
+
+                if(p == null)
+                throw new System.Exception("Não existe personagem com o Id INFORMADO. ");
+
+                await _context.Armas.AddAsync(novaArma);
+                await _context.SaveChangesAsync();
+                return Ok(novaArma.Id);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            
         }
 
          /*[HttpGet("GetRemovendoMago")]
